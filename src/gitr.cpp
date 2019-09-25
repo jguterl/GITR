@@ -19,7 +19,7 @@
 #include "ionize.h"
 #include <cmath>
 #include "ncFile.h"
-#include "ompPrint.h"
+//#include "ompPrint.h"
 #include "recombine.h"
 #include "spectroscopy.h"
 #include "surfaceModel.h"
@@ -42,9 +42,9 @@
 #ifdef __CUDACC__
 #include <curand.h>
 #include <curand_kernel.h>
-#include <experimental/filesystem>
+//#include <experimental/filesystem>
 #else
-#include <experimental/filesystem>
+//#include <experimental/filesystem>
 #endif
 
 #if USE_MPI
@@ -133,23 +133,23 @@ int main(int argc, char **argv, char **envp) {
 
 // show memory usage of GPU
 #if __CUDACC__
-  namespace fsn = std::experimental::filesystem;
+  //namespace fsn = std::experimental::filesystem;
 #else
-  namespace fsn = std::experimental::filesystem;
+  //namespace fsn = std::experimental::filesystem;
 #endif
 
 print_gpu_memory_usage(world_rank);
 
-  fsn::path output_folder = "output";
+//  fsn::path output_folder = "output";
   // Output
 
   //boost::filesystem::path dir(output_folder);
-  if (!(fsn::exists(output_folder))) {
-    std::cout << "Doesn't Exist in main" << std::endl;
-    if (fsn::create_directory(output_folder)) {
-      std::cout << " Successfully Created " << std::endl;
-    }
-  }
+  //if (!(fsn::exists(output_folder))) {
+  //  std::cout << "Doesn't Exist in main" << std::endl;
+    //   if (fsn::create_directory(output_folder)) {
+    //   std::cout << " Successfully Created " << std::endl;
+    //}
+  //}
 
   // Background species info
   float background_Z = 0.0, background_amu = 0.0;

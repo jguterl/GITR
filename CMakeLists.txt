@@ -2,10 +2,10 @@ cmake_minimum_required(VERSION 3.1)
 project(gitr)
 
 set(OPENMP 1)
-set(APPLE 0)
+set(APPLE 1)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/CMake/)
-set(CMAKE_CXX_STANDARD 17) # Doesn't set NVCC C++ standard
+set(CMAKE_CXX_STANDARD 14) # Doesn't set NVCC C++ standard
 set(CXX_STANDARD_REQUIRED TRUE)
 
 # Set source files
@@ -28,7 +28,7 @@ find_package(MPI)
 IF (MPI_FOUND)
     include_directories(SYSTEM ${MPI_INCLUDE_PATH})
 endif()
-find_package(OpenMP REQUIRED)
+#find_package(OpenMP REQUIRED)
 # Add includes
 include_directories(${NETCDF_INCLUDE_DIRS})
 include_directories(${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/include)
@@ -106,22 +106,22 @@ endif ()
 
 # setup for OpenMP backend
 if(APPLE AND OPENMP)
-    if(CMAKE_C_COMPILER_ID MATCHES "Clang")
+   # if(CMAKE_C_COMPILER_ID MATCHES "Clang")
         set(OpenMP_C "${CMAKE_C_COMPILER}")
-        set(OpenMP_C_FLAGS "-fopenmp=libomp -Wno-unused-command-line-argument")
+        set(OpenMP_C_FLAGS "-fopenmp=libomp -Wno-unused-command-line-argument -I/usr/local/opt/libomp/include -L/usr/local/opt/llvm/lib")
         set(OpenMP_C_LIB_NAMES "libomp" "libgomp" "libiomp5")
         set(OpenMP_libomp_LIBRARY ${OpenMP_C_LIB_NAMES})
         set(OpenMP_libgomp_LIBRARY ${OpenMP_C_LIB_NAMES})
         set(OpenMP_libiomp5_LIBRARY ${OpenMP_C_LIB_NAMES})
-    endif()
-    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    #endif()
+   # if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
       set(OpenMP_CXX "${CMAKE_CXX_COMPILER}")
-      set(OpenMP_CXX_FLAGS "-fopenmp=libomp -Wno-unused-command-line-argument")
+      set(OpenMP_CXX_FLAGS "-fopenmp=libomp -Wno-unused-command-line-argument -I/usr/local/opt/libomp/include -L/usr/local/opt/llvm/lib")
       set(OpenMP_CXX_LIB_NAMES "libomp" "libgomp" "libiomp5")
       set(OpenMP_libomp_LIBRARY ${OpenMP_CXX_LIB_NAMES})
       set(OpenMP_libgomp_LIBRARY ${OpenMP_CXX_LIB_NAMES})
       set(OpenMP_libiomp5_LIBRARY ${OpenMP_CXX_LIB_NAMES})
-    endif()
+  #  endif()
 endif()
 
 if (${OPENMP})
@@ -135,13 +135,13 @@ if (${OPENMP})
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
     #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} -O3 -gline-tables-only -std=c++1z -std=c++1z -stdlib=libc++ -nostdinc++ -I/opt/local/libexec/llvm-devel/include/c++/v1 -L/opt/local/libexec/llvm-devel/lib/c++/v1 -Wl,-rpath,-I/opt/local/libexec/llvm-devel/include/c++/v1") # -Wno-c++11-narrowing -fstack-protector-all -fstack-check -W -Wall") #-O3 -g -G -fsanitize=address
     #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} -std=c++17") # -nostdinc++ -I/opt/local/libexec/llvm-devel/include/c++/v1 -L/opt/local/libexec/llvm-devel/lib/c++/v1 -Wl,-rpath,-I/opt/local/libexec/llvm-devel/include/c++/v1") # -Wno-c++11-narrowing -fstack-protector-all -fstack-check -W -Wall") #-O3 -g -G stdlib=libc++
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} -std=c++14 -g") # -nostdinc++ -I/opt/local/libexec/llvm-devel/include/c++/v1 -L/opt/local/libexec/llvm-devel/lib/c++/v1 -Wl,-rpath,-I/opt/local/libexec/llvm-devel/include/c++/v1") # -Wno-c++11-narrowing -fstack-protector-all -fstack-check -W -Wall") #-O3 -g -G stdlib=libc++
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} -std=c++1z -g") # -nostdinc++ -I/opt/local/libexec/llvm-devel/include/c++/v1 -L/opt/local/libexec/llvm-devel/lib/c++/v1 -Wl,-rpath,-I/opt/local/libexec/llvm-devel/include/c++/v1") # -Wno-c++11-narrowing -fstack-protector-all -fstack-check -W -Wall") #-O3 -g -G stdlib=libc++
     set_source_files_properties(${SRC_FILES} PROPERTIES LANGUAGE CXX)
     add_executable(GITR ${SRC_FILES})
     add_definitions("-x c++ -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP -DTHRUST_HOST_SYSTEM=THRUST_HOST_SYSTEM_OMP")
     set_target_properties(GITR PROPERTIES LINKER_LANGUAGE CXX)
 endif ()
-
+find_package(OpenMP REQUIRED)
 # Setup for CPP backend
 if (${CPP_PAR})
     Message("Enabling CPP backend")

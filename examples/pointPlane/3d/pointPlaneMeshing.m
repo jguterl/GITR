@@ -3,7 +3,7 @@ close all
 model = createpde;
 importGeometry(model,'pointPlane.stl');% Import STL file
 figure(2)
-pdegplot(model,'FaceLabels','on') %Plot stl 
+pdegplot(model,'FaceLabels','on') %Plot stl
 
 tic %time meshing - for high resolution this is a large cost
 mesh = generateMesh(model,'GeometricOrder','linear','Hmax',0.03);% Options Hmax and Hmin can be set, linear order can also be used
@@ -90,27 +90,27 @@ for i=1:length(planes)
     A = planes(i,1:3);
     B = planes(i,4:6);
     C = planes(i,7:9);
-    
+
     AB = B-A;
     AC = C-A;
     BC = C-B;
     BA = A-B;
     CA = -AC;
     CB = -BC;
-    
+
     norm1 = norm(AB);
     norm2 = norm(BC);
     norm3 = norm(AC);
-    
+
     s = (norm1+norm2+norm3)/2;
     area(i) = sqrt(s*(s-norm1)*(s-norm2)*(s-norm3));
     normalVec = cross(AB,AC);
-   
+
     d = -(dot(normalVec,A));
-    
+
     abcd(i,:) = [normalVec,d];
     plane_norm(i) = norm(normalVec);
-    
+
     BCxBA(i) = sign(dot(cross(BC,BA),normalVec));
     CAxCB(i) = sign(dot(cross(CA,CB),normalVec));
 end
@@ -180,7 +180,7 @@ for i=2:nFaces
 fprintf(fileID, ',');
 fprintf(fileID,'%5e',abcd(i,1));
 end
-
+Z
 fprintf(fileID,' ] \n   b = [');
 fprintf(fileID,'%5e',abcd(1,2));
 for i=2:nFaces

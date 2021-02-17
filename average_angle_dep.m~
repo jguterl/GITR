@@ -1,0 +1,13 @@
+% average angle dependency
+theta0=linspace(0,pi/2,1000);
+b_=1.8064;
+f_=5.18;
+c_=1.0205;
+thetaprime=94.83;
+for i =1:length(theta0)
+theta=linspace(0,pi/2,1000);
+dtheta=15*pi/180
+distr_theta=exp(-(theta-theta0).^2/dtheta^2)
+distr_theta=distr_theta/integrale(dist_theta,theta,1)
+integrale(dist_theta.*angle_dep(theta*pi/180,f,b,c,thetaprime)
+end

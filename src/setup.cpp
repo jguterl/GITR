@@ -14,7 +14,6 @@ void INIT(int nP, Particle p[], libconfig::Config &cfg)
 double x_start = cfg.lookup("impurityParticleSource.initialConditions.x_start");
 double y_start = cfg.lookup("impurityParticleSource.initialConditions.y_start");
 double z_start = cfg.lookup("impurityParticleSource.initialConditions.z_start");
-
 double energy_eV_x_start = cfg.lookup("impurityParticleSource.initialConditions.energy_eV_x_start");
 double energy_eV_y_start = cfg.lookup("impurityParticleSource.initialConditions.energy_eV_y_start");
 double energy_eV_z_start = cfg.lookup("impurityParticleSource.initialConditions.energy_eV_z_start");
@@ -45,5 +44,5 @@ if(energy_eV_z_start == 0.0) vz = 0.0;
 	p[i].perpDistanceToSurface = 0.0;
 	//std::cout<< "amu: " << p[i].amu << std::endl;
 	}
-	
+
 }

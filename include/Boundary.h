@@ -20,11 +20,12 @@
 #include <random>
 #endif
 
-class Boundary 
+class Boundary
 {
   public:
     int periodic;
     int periodic_bc_x;
+    int periodic_bc_y;
     int pointLine;
     int surfaceNumber;
     int surface;
@@ -48,19 +49,23 @@ class Boundary
     #else
       float slope_dzdx;
       float intercept_z;
-    #endif 
-    float periodic_bc_x0;    
-    float periodic_bc_x1;    
+    #endif
+    float periodic_bc_x0;
+    float periodic_bc_x1;
+    float periodic_bc_y0;
+    float periodic_bc_y1;
     float Z;
     float amu;
     float potential;
+    float lambda;
+    float zref;
     float ChildLangmuirDist;
     #ifdef __CUDACC__
     //curandState streams[7];
     #else
     //std::mt19937 streams[7];
     #endif
-	
+
     float hitWall;
     float length;
     float distanceToParticle;
@@ -142,8 +147,8 @@ class Boundary
             float tmp[3] = {0.0f};
             getSurfaceParallel(X,y,x);
             getSurfaceNormal(Z,y,x);
-            Y[0] = Z[1]*X[2] - Z[2]*X[1]; 
-            Y[1] = Z[2]*X[0] - Z[0]*X[2]; 
+            Y[0] = Z[1]*X[2] - Z[2]*X[1];
+            Y[1] = Z[2]*X[0] - Z[0]*X[2];
             Y[2] = Z[0]*X[1] - Z[1]*X[0];
 
             tmp[0] = X[0]*C[0] + Y[0]*C[1] + Z[0]*C[2];
@@ -156,13 +161,13 @@ class Boundary
         }
 //        Boundary(float x1,float y1, float z1, float x2, float y2, float z2,float slope, float intercept, float Z, float amu)
 //		{
-//    
+//
 //		this->x1 = x1;
 //		this->y1 = y1;
 //		this->z1 = z1;
 //        this->x2 = x2;
 //        this->y2 = y2;
-//        this->z2 = z2;        
+//        this->z2 = z2;
 //#if USE3DTETGEOM > 0
 //#else
 //        this->slope_dzdx = slope;

@@ -23,10 +23,10 @@
 CUDA_CALLABLE_MEMBER
 void getBoundaryNormal(Boundary* boundaryVector,int wallIndex,float surfaceNormalVector[],float x,float y){
   #if USE3DTETGEOM > 0
-           float norm_normal = boundaryVector[wallIndex].plane_norm; 
+           float norm_normal = boundaryVector[wallIndex].plane_norm;
             surfaceNormalVector[0] = boundaryVector[wallIndex].a/norm_normal;
             surfaceNormalVector[1] = boundaryVector[wallIndex].b/norm_normal;
-            
+
             surfaceNormalVector[2] = boundaryVector[wallIndex].c/norm_normal;
   #else
             float tol = 1e12;
@@ -48,18 +48,18 @@ void getBoundaryNormal(Boundary* boundaryVector,int wallIndex,float surfaceNorma
                     surfaceNormalVector[0] = 1.0f;
                     surfaceNormalVector[1] = 0.0f;
                     surfaceNormalVector[2] = -1.0f / (boundaryVector[wallIndex].slope_dzdx);
-            norm_normal = std::sqrt(surfaceNormalVector[2]*surfaceNormalVector[2] + 1.0); 
+            norm_normal = std::sqrt(surfaceNormalVector[2]*surfaceNormalVector[2] + 1.0);
             surfaceNormalVector[0] = surfaceNormalVector[0]/norm_normal;
             surfaceNormalVector[1] = surfaceNormalVector[1]/norm_normal;
-            
+
             surfaceNormalVector[2] = surfaceNormalVector[2]/norm_normal;
                 }
-#if USECYLSYMM > 0 
+#if USECYLSYMM > 0
             float theta = std::atan2(y,x);
             float Sr = surfaceNormalVector[0];
             surfaceNormalVector[0] = std::cos(theta)*Sr;
             surfaceNormalVector[1] = std::sin(theta)*Sr;
-#endif            
+#endif
 #endif
 }
 CUDA_CALLABLE_MEMBER
@@ -84,17 +84,17 @@ double stoppingPower (Particles * particles,int indx, double Mtarget, double Zta
 	reducedEnergy = E0*(Mtarget/(particles->amu[indx]+Mtarget))*(screenLength/(particles->Z[indx]*Ztarget*ke2));
 	stoppingPower = 0.5*std::log(1.0 + 1.2288*reducedEnergy)/(reducedEnergy + 0.1728*std::sqrt(reducedEnergy) + 0.008*std::pow(reducedEnergy, 0.1504));
 
-	return stoppingPower;	
+	return stoppingPower;
 }
 
-struct erosion { 
+struct erosion {
     Particles *particles;
     const double dt;
 
-    erosion(Particles *_particles, double _dt) : particles(_particles), dt(_dt) {} 
+    erosion(Particles *_particles, double _dt) : particles(_particles), dt(_dt) {}
 
-CUDA_CALLABLE_MEMBER_DEVICE    
-void operator()(std::size_t indx) const { 
+CUDA_CALLABLE_MEMBER_DEVICE
+void operator()(std::size_t indx) const {
 	double screenLength;
 	double stopPower;
 	double q = 18.6006;
@@ -108,12 +108,12 @@ void operator()(std::size_t indx) const {
 	double E0;
 
 	screenLength = screeningLength(particles->Z[indx], Ztarget);
-	stopPower = stoppingPower(particles,indx, Mtarget, Ztarget, screenLength); 
+	stopPower = stoppingPower(particles,indx, Mtarget, Ztarget, screenLength);
 	E0 = 0.5*particles->amu[indx]*1.6737236e-27*(particles->vx[indx]*particles->vx[indx] + particles->vy[indx]*particles->vy[indx]+ particles->vz[indx]*particles->vz[indx])/1.60217662e-19;
 	term = std::pow((E0/Eth - 1),mu);
 	Y0 = q*stopPower*term/(lambda + term);
     	}
-     
+
 };
 
 struct reflection {
@@ -128,8 +128,8 @@ struct reflection {
     float* Elog_sputtRefCoeff;
     float* spyl_surfaceModel;
     float* rfyl_surfaceModel;
-    int nE_sputtRefDistOut; 
-    int nE_sputtRefDistOutRef; 
+    int nE_sputtRefDistOut;
+    int nE_sputtRefDistOutRef;
     int nA_sputtRefDistOut;
     int nE_sputtRefDistIn;
     int nA_sputtRefDistIn;
@@ -184,7 +184,7 @@ struct reflection {
     float* _energyDistGrid01Ref,
     float* _angleDistGrid01,
     float* _EDist_CDF_Y_regrid,
-    float* _ADist_CDF_Y_regrid, 
+    float* _ADist_CDF_Y_regrid,
     float* _EDist_CDF_R_regrid,
     float* _ADist_CDF_R_regrid,
     int _nEdist,
@@ -232,7 +232,7 @@ particles(_particles),
 
 CUDA_CALLABLE_MEMBER_DEVICE
 void operator()(std::size_t indx) const {
-    
+
     if (particles->hitWall[indx] == 1.0) {
       float E0 = 0.0;
       float thetaImpact = 0.0;
@@ -351,11 +351,14 @@ void operator()(std::size_t indx) const {
                 float r7 = curand_uniform(&state[6]);
                 float r8 = curand_uniform(&state[7]);
                 float r9 = curand_uniform(&state[8]);
+                float r10 = curand_uniform(&state[9]]);
+
               #else
                 std::uniform_real_distribution<float> dist(0.0, 1.0);
                 float r7=dist(state[6]);
                 float r8=dist(state[7]);
                 float r9=dist(state[8]);
+                float r10 = dist(state[9]);
               #endif
                 //float r7 = 0.0;
             #endif
@@ -381,13 +384,13 @@ void operator()(std::size_t indx) const {
     #if FLUX_EA > 0
               EdistInd = std::floor((eInterpVal-E0dist)/dEdist);
               AdistInd = std::floor((aInterpVal-A0dist)/dAdist);
-              if((EdistInd >= 0) && (EdistInd < nEdist) && 
+              if((EdistInd >= 0) && (EdistInd < nEdist) &&
                  (AdistInd >= 0) && (AdistInd < nAdist))
               {
             #if USE_CUDA > 0
                   atomicAdd(&surfaces->reflDistribution[surfaceHit*nEdist*nAdist + EdistInd*nAdist + AdistInd],newWeight);
-            #else      
-                  surfaces->reflDistribution[surfaceHit*nEdist*nAdist + EdistInd*nAdist + AdistInd] = 
+            #else
+                  surfaces->reflDistribution[surfaceHit*nEdist*nAdist + EdistInd*nAdist + AdistInd] =
                     surfaces->reflDistribution[surfaceHit*nEdist*nAdist + EdistInd*nAdist + AdistInd] +  newWeight;
             #endif
                }
@@ -419,7 +422,7 @@ void operator()(std::size_t indx) const {
             //    particles->test1[indx] = eInterpVal;
             //    particles->test2[indx] = r8;
             //    particles->test3[indx] = r9;
-            //}            
+            //}
                 //std::cout << " particle sputters with " << eInterpVal << aInterpVal <<  std::endl;
 		//printf("particle sputters with E A %f %f \n", eInterpVal, aInterpVal);
                   //newWeight=(Y0/sputtProb)*weight;
@@ -427,17 +430,17 @@ void operator()(std::size_t indx) const {
     #if FLUX_EA > 0
               EdistInd = std::floor((eInterpVal-E0dist)/dEdist);
               AdistInd = std::floor((aInterpVal-A0dist)/dAdist);
-              if((EdistInd >= 0) && (EdistInd < nEdist) && 
+              if((EdistInd >= 0) && (EdistInd < nEdist) &&
                  (AdistInd >= 0) && (AdistInd < nAdist))
               {
                 //std::cout << " particle sputters with " << EdistInd << AdistInd <<  std::endl;
 		//printf("particle sputters with E A %i %i \n", EdistInd, AdistInd);
             #if USE_CUDA > 0
                   atomicAdd(&surfaces->sputtDistribution[surfaceHit*nEdist*nAdist + EdistInd*nAdist + AdistInd],newWeight);
-            #else      
-                  surfaces->sputtDistribution[surfaceHit*nEdist*nAdist + EdistInd*nAdist + AdistInd] = 
+            #else
+                  surfaces->sputtDistribution[surfaceHit*nEdist*nAdist + EdistInd*nAdist + AdistInd] =
                     surfaces->sputtDistribution[surfaceHit*nEdist*nAdist + EdistInd*nAdist + AdistInd] +  newWeight;
-              #endif 
+              #endif
               }
 	       #endif
                   if(sputtProb == 0.0) newWeight = 0.0;
@@ -462,7 +465,7 @@ void operator()(std::size_t indx) const {
             #endif
                 }
             }
-            //std::cout << "eInterpValYR " << eInterpVal << std::endl; 
+            //std::cout << "eInterpValYR " << eInterpVal << std::endl;
             }
             else
             {       newWeight = 0.0;
@@ -475,9 +478,9 @@ void operator()(std::size_t indx) const {
                     surfaces->grossDeposition[surfaceHit] = surfaces->grossDeposition[surfaceHit]+weight;
             #endif
 	        }
-            //std::cout << "eInterpValYR_not " << eInterpVal << std::endl; 
+            //std::cout << "eInterpValYR_not " << eInterpVal << std::endl;
             }
-            //std::cout << "eInterpVal " << eInterpVal << std::endl; 
+            //std::cout << "eInterpVal " << eInterpVal << std::endl;
 	    if(eInterpVal <= 0.0)
             {       newWeight = 0.0;
                     particles->hitWall[indx] = 2.0;
@@ -512,16 +515,16 @@ void operator()(std::size_t indx) const {
             #if FLUX_EA > 0
                 EdistInd = std::floor((E0-E0dist)/dEdist);
                 AdistInd = std::floor((thetaImpact-A0dist)/dAdist);
-              
-	        if((EdistInd >= 0) && (EdistInd < nEdist) && 
+
+	        if((EdistInd >= 0) && (EdistInd < nEdist) &&
                   (AdistInd >= 0) && (AdistInd < nAdist))
                 {
 #if USE_CUDA > 0
-                    atomicAdd(&surfaces->energyDistribution[surfaceHit*nEdist*nAdist + 
+                    atomicAdd(&surfaces->energyDistribution[surfaceHit*nEdist*nAdist +
                                                EdistInd*nAdist + AdistInd], weight);
 #else
 
-                    surfaces->energyDistribution[surfaceHit*nEdist*nAdist + EdistInd*nAdist + AdistInd] = 
+                    surfaces->energyDistribution[surfaceHit*nEdist*nAdist + EdistInd*nAdist + AdistInd] =
                     surfaces->energyDistribution[surfaceHit*nEdist*nAdist + EdistInd*nAdist + AdistInd] +  weight;
 #endif
         }

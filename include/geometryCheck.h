@@ -94,13 +94,10 @@ struct geometry_check {
   //CUDA_CALLABLE_MEMBER_DEVICE
   __host__ __device__
   void operator()(std::size_t indx) const  {
-    // std::cout << "geometry check particle x" << particlesPointer->x[indx] <<
-    // particlesPointer->x[indx]previous <<std::endl; std::cout << "geometry
-    // check particle y" << particlesPointer->y[indx] <<
-    // particlesPointer->y[indx]previous <<std::endl; std::cout << "geometry
-    // check particle z" << particlesPointer->z[indx] <<
-    // particlesPointer->z[indx]previous <<std::endl; std::cout << "geometry
-    // check particle hitwall" << p.hitWall <<std::endl;
+    // std::cout << "geometry check particle idx/ x / y/ /z : " << indx << " " << particlesPointer->x[indx]<< " "<< particlesPointer->y[indx]<< " "<<particlesPointer->z[indx]  <<std::endl;
+    // std::cout << "geometry check particle hitwall" << particlesPointer->hitWall[indx] <<std::endl;
+    if(particlesPointer->hitWall[indx] == 1)
+{return;}
     if (particlesPointer->hitWall[indx] == 0.0) {
       int hitSurface = 0;
       float x = particlesPointer->x[indx];
@@ -203,6 +200,25 @@ struct geometry_check {
               (particlesPointer->x[indx] - boundaryVector[nLines].periodic_bc_x1);
         }
       }
+
+      if (boundaryVector[nLines].periodic_bc_y) {
+        if (particlesPointer->y[indx] < boundaryVector[nLines].periodic_bc_y0) {
+          particlesPointer->y[indx] =
+              boundaryVector[nLines].periodic_bc_y1 -
+              (boundaryVector[nLines].periodic_bc_y0 - particlesPointer->y[indx]);
+          particlesPointer->yprevious[indx] =
+              boundaryVector[nLines].periodic_bc_y1 -
+              (boundaryVector[nLines].periodic_bc_y0 - particlesPointer->y[indx]);
+
+        } else if (particlesPointer->y[indx] > boundaryVector[nLines].periodic_bc_y1) {
+          particlesPointer->y[indx] =
+              boundaryVector[nLines].periodic_bc_y0 +
+              (particlesPointer->y[indx] - boundaryVector[nLines].periodic_bc_y1);
+          particlesPointer->yprevious[indx] =
+              boundaryVector[nLines].periodic_bc_y0 +
+              (particlesPointer->y[indx] - boundaryVector[nLines].periodic_bc_y1);
+        }
+      }
       if (boundaryVector[nLines].periodic) {
         if (particlesPointer->y[indx] < boundaryVector[nLines].y1) {
           particlesPointer->y[indx] =
@@ -245,6 +261,9 @@ struct geometry_check {
       float Ap[3] = {0.0, 0.0, 0.0};
       float Bp[3] = {0.0, 0.0, 0.0};
       float Cp[3] = {0.0, 0.0, 0.0};
+      float u[3] = {0.0, 0.0, 0.0};
+      float v[3] = {0.0, 0.0, 0.0};
+      float w[3] = {0.0, 0.0, 0.0};
       float normalVector[3] = {0.0, 0.0, 0.0};
       float crossABAp[3] = {0.0, 0.0, 0.0};
       float crossBCBp[3] = {0.0, 0.0, 0.0};
@@ -260,6 +279,7 @@ struct geometry_check {
       float dist_to_p = 0.0;
       int boundariesCrossed[6] = {0, 0, 0, 0, 0, 0};
       float dist_to_boundariesCrossed[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+
       /*
       if(particlesPointer->xprevious[indx] < 0 ||
       particlesPointer->yprevious[indx] < 0 ||
@@ -276,6 +296,12 @@ struct geometry_check {
                      particlesPointer->zprevious[indx]};
       float p1[3] = {particlesPointer->x[indx], particlesPointer->y[indx],
                      particlesPointer->z[indx]};
+     // std::cout << " p0 " << p0[0] << " " << p0[1] << " " << p0[2] <<std::endl;
+     //std::cout << " p1 " << p1[0] << " " << p1[1] << " " << p1[2] <<std::endl;
+     //std::cout << " particlesPointer->hitWall[indx] " << particlesPointer->hitWall[indx] <<std::endl;
+    if(particlesPointer->hitWall[indx] == 1)
+{
+return;}
 #if GEOM_HASH > 0
       // find which hash
       int nHash = 0;
@@ -372,6 +398,7 @@ struct geometry_check {
                       rInd * n_closeGeomElements[nHash] + j];
         // std::cout << "i's " << i << std::endl;
 #else
+//std::cout << "------------> nLines " << nLines << std::endl;
       for (int i = 0; i < nLines; i++) {
 #endif
         a = boundaryVector[i].a;
@@ -383,20 +410,33 @@ struct geometry_check {
             (a * p0[0] + b * p0[1] + c * p0[2] + d) / plane_norm;
         pointToPlaneDistance1 =
             (a * p1[0] + b * p1[1] + c * p1[2] + d) / plane_norm;
-        // std::cout << "plane coeffs "<< i << " " << a << " " << b << " " << c
-        // << " " << d << " " << plane_norm << std::endl; std::cout << "point to
-        // plane dists "<< i << " " << pointToPlaneDistance0 << " " <<
-        // pointToPlaneDistance1 << std::endl;
+         //std::cout << "plane coeffs "<< i << " " << a << " " << b << " " << c<< " " << d << " " << plane_norm << std::endl;
+         // std::cout << "point to plane dists "<< i << " " << pointToPlaneDistance0 << " " <<pointToPlaneDistance1 << std::endl;
+
         signPoint0 = std::copysign(1.0, pointToPlaneDistance0);
         signPoint1 = std::copysign(1.0, pointToPlaneDistance1);
 
+        // std::cout << " p0 " << p0[0] << " " << p0[1] << " " << p0[2] <<std::endl;
+     //std::cout << " p1 " << p1[0] << " " << p1[1] << " " << p1[2] <<std::endl;
+
         if (signPoint0 != signPoint1) {
+        //std::cout << "i=" << " " << i << " signPoint "<< signPoint0 << " " << signPoint1 << " " << std::endl;
+
+
+        //std::cout << "plane coeffs " << a << " " << b << " " << c<< " " << d << " " << plane_norm << std::endl;
+        //std::cout << "point to plane dists " << pointToPlaneDistance0 << " " <<pointToPlaneDistance1 << std::endl;
+
+
           t = -(a * p0[0] + b * p0[1] + c * p0[2] + d) /
               (a * (p1[0] - p0[0]) + b * (p1[1] - p0[1]) + c * (p1[2] - p0[2]));
           vectorAssign(p0[0] + t * (p1[0] - p0[0]), p0[1] + t * (p1[1] - p0[1]),
                        p0[2] + t * (p1[2] - p0[2]), p);
-          // std::cout << " p " << p[0] << " " << p[1] << " " << p[2] <<
-          // std::endl;
+          //std::cout << " t " << t <<std::endl;
+
+          //if (std::fabs(p[2])<1e-13)
+          //{p[2]=0;}
+          //std::cout << " p " << p[0] << " " << p[1] << " " << p[2] <<std::endl;
+          /*
           vectorAssign(boundaryVector[i].x1, boundaryVector[i].y1,
                        boundaryVector[i].z1, A);
           vectorAssign(boundaryVector[i].x2, boundaryVector[i].y2,
@@ -417,38 +457,60 @@ struct geometry_check {
           vectorCrossProduct(AB, Ap, crossABAp);
           vectorCrossProduct(BC, Bp, crossBCBp);
           vectorCrossProduct(CA, Cp, crossCACp);
-          // std::cout << "AB " << AB[0] << " " << AB[1] << " " << AB[2] <<
-          // std::endl; std::cout << "Ap " << Ap[0] << " " << Ap[1] << " " <<
+          */
+          vectorAssign(boundaryVector[i].x1-p[0], boundaryVector[i].y1-p[1],
+                       boundaryVector[i].z1-p[2], A);
+          vectorAssign(boundaryVector[i].x2-p[0], boundaryVector[i].y2-p[1],
+                       boundaryVector[i].z2-p[2], B);
+          vectorAssign(boundaryVector[i].x3-p[0], boundaryVector[i].y3-p[1],
+                       boundaryVector[i].z3-p[2], C);
+          vectorCrossProduct(B, C, u);
+          vectorCrossProduct(C, A, v);
+          vectorCrossProduct(A, B, w);
+
+
+           //std::cout << "AB " << AB[0] << " " << AB[1] << " " << AB[2] <<
+         // std::endl; std::cout << "Ap " << Ap[0] << " " << Ap[1] << " " <<
           // Ap[2] << std::endl; std::cout << "BC " << BC[0] << " " << BC[1] << "
           // " << BC[2] << std::endl; std::cout << "Bp " << Bp[0] << " " << Bp[1]
           // << " " << Bp[2] << std::endl; std::cout << "CA " << CA[0] << " " <<
           // CA[1] << " " << CA[2] << std::endl; std::cout << "Cp " << Cp[0] << "
           // " << Cp[1] << " " << Cp[2] << std::endl;
-          signDot0 =
-              std::copysign(1.0, vectorDotProduct(crossABAp, normalVector));
-          signDot1 =
-              std::copysign(1.0, vectorDotProduct(crossBCBp, normalVector));
-          signDot2 =
-              std::copysign(1.0, vectorDotProduct(crossCACp, normalVector));
-          totalSigns = 1.0 * std::abs(signDot0 + signDot1 + signDot2);
-          // std::cout << "signdots " << signDot0 << " " << signDot1 << " " <<
-          // signDot2 << " " << totalSigns << " " << (totalSigns
-          // == 3.0)<<std::endl;
+//          signDot0 =
+//              std::copysign(1.0, vectorDotProduct(crossABAp, normalVector));
+//          signDot1 =
+//              std::copysign(1.0, vectorDotProduct(crossBCBp, normalVector));
+//          signDot2 =
+//              std::copysign(1.0, vectorDotProduct(crossCACp, normalVector));
+//          totalSigns = 1.0 * std::abs(signDot0 + signDot1 + signDot2);
+//           std::cout << "signdots " << signDot0 << " " << signDot1 << " " <<
+//           signDot2 << " " << totalSigns << " " << (totalSigns== 3.0)<<std::endl;
 
-          // std::cout << "before loop totalSigns hitSurface " << totalSigns <<
-          // " " << hitSurface << std::endl;
+
+           //std::cout << "u.w " << vectorDotProduct(u,w) << std::endl;
+           //std::cout << "u.v " << vectorDotProduct(u,v) << std::endl;
+           //std::cout << "A" << " " << boundaryVector[i].x1 << " " << boundaryVector[i].y1 << " "<< boundaryVector[i].z1 <<std::endl;
+           //std::cout << "B" << " " << boundaryVector[i].x2 << " " << boundaryVector[i].y2 << " "<< boundaryVector[i].z2 <<std::endl;
+           //std::cout << "C" << " " << boundaryVector[i].x3 << " " << boundaryVector[i].y3 << " "<< boundaryVector[i].z3 <<std::endl;
           hitSurface = 0;
+          /*
           if (totalSigns == 3.0) {
             // std::cout << "in loop totalSigns hitSurface " << totalSigns << "
             // " << hitSurface << std::endl;
             hitSurface = 1;
+
           }
-          if (vectorNorm(crossABAp) == 0.0 || vectorNorm(crossBCBp) == 0.0 ||
-              vectorNorm(crossCACp) == 0.0) {
+          if (vectorNorm(crossABAp) < 1e-13 || vectorNorm(crossBCBp) < 1e-13 ||
+              vectorNorm(crossCACp) < 1e-13) {
             hitSurface = 1;
-          }
-          // std::cout << "totalSigns hitSurface " << totalSigns << " " <<
-          // hitSurface << std::endl;
+          }*/
+
+          if (vectorDotProduct(u,v) >= 0.0f && vectorDotProduct(u,w) >= 0.0f)
+          {hitSurface = 1;}
+        //std::cout << " hitSurface " << hitSurface << std::endl;
+        //std::string dummy;
+        //std::cout << "Enter to continue..." << std::endl;
+        //std::getline(std::cin, dummy);
           if (hitSurface == 1) {
             boundariesCrossed[nBoundariesCrossed] = i;
             dist_to_boundariesCrossed[nBoundariesCrossed] = pointToPlaneDistance0;
@@ -617,20 +679,20 @@ struct geometry_check {
         //        rInd*n_closeGeomElements[0] + j << std::endl;
         //    }
         i = closeGeom[closeIndx];
-      
+
 #else
       for (int i = 0; i < nLines; i++) {
 #endif
         // std::cout << "vert geom " << i << "  " <<
         // fabs(boundaryVector[i].slope_dzdx) << " " << tol << std::endl;
-        if (std::abs(boundaryVector[i].slope_dzdx) >= tol * 0.75f) 
+        if (std::abs(boundaryVector[i].slope_dzdx) >= tol * 0.75f)
         {
           signPoint = std::copysign(1.0, pdim1 - boundaryVector[i].x1);
           signPoint0 = std::copysign(1.0, pdim1previous - boundaryVector[i].x1);
           // std::cout << "signpoint1 " << signPoint << " " << signPoint0 <<
           // std::endl;
-        } 
-        else 
+        }
+        else
         {
           signPoint =
               std::copysign(1.0, particlesPointer->z[indx] -
@@ -644,21 +706,21 @@ struct geometry_check {
            //std::endl;
         }
 
-        if (signPoint != signPoint0) 
+        if (signPoint != signPoint0)
         {
-          if (std::abs(particle_slope) >= tol * 0.75f) 
+          if (std::abs(particle_slope) >= tol * 0.75f)
           {
             // std::cout << " isinf catch " << std::endl;
             particle_slope = tol;
           }
-          if (std::abs(particle_slope) >= tol * 0.75f) 
+          if (std::abs(particle_slope) >= tol * 0.75f)
           {
             signLine1 = std::copysign(1.0, boundaryVector[i].x1 - pdim1);
             signLine2 = std::copysign(1.0, boundaryVector[i].x2 - pdim1);
             // std::cout << "signlines3 " << signLine1 << " " << signLine2 <<
             // std::endl;
           }
-          else 
+          else
           {
             signLine1 =
                 std::copysign(1.0, boundaryVector[i].z1 -
@@ -671,21 +733,21 @@ struct geometry_check {
             //std::cout << "signline 1 and 2 " << signLine1 << " " << signLine2 << std::endl;
           }
 
-          ////if (signPoint != signPoint0) 
+          ////if (signPoint != signPoint0)
           ////{
-          ////  if (std::abs(particle_slope) >= tol * 0.75f) 
+          ////  if (std::abs(particle_slope) >= tol * 0.75f)
           ////  {
           ////    // std::cout << " isinf catch " << std::endl;
           ////    particle_slope = tol;
           ////  }
-          ////  if (std::abs(particle_slope) >= tol * 0.75f) 
+          ////  if (std::abs(particle_slope) >= tol * 0.75f)
           ////  {
           ////    signLine1 = std::copysign(1.0, boundaryVector[i].x1 - pdim1);
           ////    signLine2 = std::copysign(1.0, boundaryVector[i].x2 - pdim1);
           ////    // std::cout << "signlines3 " << signLine1 << " " << signLine2 <<
           ////    // std::endl;
-          ////  } 
-          ////  else 
+          ////  }
+          ////  else
           ////  {
           ////    signLine1 =
           ////        std::copysign(1.0, boundaryVector[i].z1 -
@@ -701,7 +763,7 @@ struct geometry_check {
             // boundaryVector[i].z1 << " " << boundaryVector[i].x1 <<
             // " " << boundaryVector[i].z2 << " " << boundaryVector[i].x2 <<
             // std::endl;
-            if (signLine1 != signLine2) 
+            if (signLine1 != signLine2)
             {
               intersectionIndices[nIntersections] = i;
               nIntersections++;
@@ -709,7 +771,7 @@ struct geometry_check {
               // std::cout << "nintersections " << nIntersections << std::endl;
               // std::cout << fabs(particlesPointer->x[indx] -
               // particlesPointer->xprevious[indx]) << tol_small << std::endl;
-              if (std::abs(pdim1 - pdim1previous) < tol_small) 
+              if (std::abs(pdim1 - pdim1previous) < tol_small)
               {
                 //  std::cout << "vertical line" << std::cout;
                 intersectionx[nIntersections - 1] = pdim1previous;
@@ -717,19 +779,19 @@ struct geometry_check {
                     intersectionx[nIntersections - 1] *
                         boundaryVector[i].slope_dzdx +
                     boundaryVector[i].intercept_z;
-              } 
-              else 
+              }
+              else
               {
                 // std::cout << "not vertical line" << std::endl;
                 // std::cout << 0.0*7.0 << " " << i << " " << nParam << " " <<
                 // lines[i*nParam+4] << "  " <<tol << std::endl; std::cout <<
                 // "boundaryVector slope " << boundaryVector[i].slope_dzdx << " "
                 // << tol*0.75 <<std::endl;
-                if (std::abs(boundaryVector[i].slope_dzdx) >= tol * 0.75f) 
+                if (std::abs(boundaryVector[i].slope_dzdx) >= tol * 0.75f)
                 {
                   intersectionx[nIntersections - 1] = boundaryVector[i].x1;
-                } 
-                else 
+                }
+                else
                 {
                   intersectionx[nIntersections - 1] =
                       (boundaryVector[i].intercept_z - particle_intercept) /
@@ -750,7 +812,7 @@ struct geometry_check {
       //std::cout << " nIntersections " << nIntersections << std::endl;
         // if(particlesPointer->hitWall[indx] == 0.0)
         // {
-        if (nIntersections == 0) 
+        if (nIntersections == 0)
         {
           particlesPointer->distTraveled[indx] =
               particlesPointer->distTraveled[indx] + dpath;
@@ -764,14 +826,14 @@ struct geometry_check {
           // std::endl; std::cout << "r0 " << particlesPointer->xprevious[indx]
           // << " " << particlesPointer->yprevious[indx] << " " <<
           // particlesPointer->zprevious[indx] << std::endl;
-        } 
-        else if (nIntersections == 1) 
+        }
+        else if (nIntersections == 1)
         {
           particlesPointer->hitWall[indx] = 1.0f;
           particlesPointer->wallIndex[indx] = intersectionIndices[0];
           particlesPointer->surfaceHit[indx] = intersectionIndices[0];
           // particlesPointer->test0[indx] = -100.0;
-          if (particle_slope >= tol * 0.75f) 
+          if (particle_slope >= tol * 0.75f)
           {
 #if USECYLSYMM > 0
             float x0 = particlesPointer->xprevious[indx];
@@ -806,8 +868,8 @@ struct geometry_check {
             // std::endl;
 
 #endif
-          } 
-          else 
+          }
+          else
           {
 #if USECYLSYMM > 0
             float x0 = particlesPointer->xprevious[indx];
@@ -867,8 +929,8 @@ struct geometry_check {
           particlesPointer->z[indx] = intersectiony[0];
           // std::cout << "nInt = 1 position " << intersectionx[0] << " " <<
           // intersectiony[0]  << std::endl;
-        } 
-        else 
+        }
+        else
         {
           // std::cout << "nInts greater than 1 " << nIntersections <<
           // std::endl;
@@ -960,7 +1022,10 @@ struct geometry_check {
         particleTrackVector[0] = particleTrackVector[0] / norm_part;
         particleTrackVector[1] = particleTrackVector[1] / norm_part;
         particleTrackVector[2] = particleTrackVector[2] / norm_part;
-
+        std::cout<<"surface normal:" << surfaceNormalVector[0]<< surfaceNormalVector[1]<< surfaceNormalVector[2] <<std::endl;
+        std::cout<<"wallHitP:" << wallHitP <<std::endl;
+        std::cout<<"surface normal:" << particleTrackVector[0]<< particleTrackVector[1]<< particleTrackVector[2] <<std::endl;
+        std::cout<<"surface normal:" << std::acos(vectorDotProduct(particleTrackVector, surfaceNormalVector))* 180.0 / 3.14159265359 <<std::endl;
         partDotNormal =
             vectorDotProduct(particleTrackVector, surfaceNormalVector);
         thetaImpact = std::acos(partDotNormal);
@@ -973,6 +1038,7 @@ struct geometry_check {
         int surfaceHit =
             boundaryVector[particlesPointer->surfaceHit[indx]].surfaceNumber;
         int surface = boundaryVector[particlesPointer->surfaceHit[indx]].surface;
+       //  std::cout << "# surface: "<< surface << std::endl;
         float weight = particlesPointer->weight[indx];
         // particlesPointer->test[indx] = norm_part;
         // particlesPointer->test0[indx] = partDotNormal;
@@ -983,11 +1049,12 @@ struct geometry_check {
         // std::cout << "impact energy and angle " << E0 << " " << thetaImpact
         // << std::endl; std::cout << "surface EAinds " <<surface<< " " <<
         // EdistInd << " " << AdistInd << std::endl;
+
         if (surface) {
           if ((EdistInd >= 0) && (EdistInd < nEdist) && (AdistInd >= 0) &&
               (AdistInd < nAdist)) {
 #if USE_CUDA > 0
-#if __CUDA_ARCH__		  
+#if __CUDA_ARCH__
             atomicAdd(
                 &surfaces->energyDistribution[surfaceHit * nEdist * nAdist +
                                               EdistInd * nAdist + AdistInd],
@@ -999,7 +1066,7 @@ struct geometry_check {
             atomicAdd(&surfaces->sumParticlesStrike[surfaceHit], 1);
 #else
 #endif
-		  
+
 #else
 
             surfaces->energyDistribution[surfaceHit * nEdist * nAdist +

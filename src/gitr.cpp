@@ -76,7 +76,7 @@ int main(int argc, char **argv, char **envp) {
   // Initialize the MPI environment
   MPI_Init(&argc, &argv);
 #endif
- 
+
   // read comand line arguments for specifying number of ppn (or gpus per node)
   // and specify input file if different than default
   // -nGPUPerNode and -i respectively
@@ -107,14 +107,14 @@ int main(int argc, char **argv, char **envp) {
   int world_rank = 0;
   int world_size = 1;
 #endif
-  
+
   // Prepare config files for import
   libconfig::Config cfg, cfg_geom;
   cfg.setAutoConvert(true);
   cfg_geom.setAutoConvert(true);
 
   std::string input_path = "input/";
-  
+
   if (world_rank == 0) {
     // Parse and read input file
     std::cout << "Open configuration file " << input_path << inputFile
@@ -139,10 +139,10 @@ int main(int argc, char **argv, char **envp) {
     //auto field1 = new Field(cfg,"backgroundPlasmaProfiles.Bfield");
     //FIXME: work on new field struct
     //auto field1 = new Field();
-    //auto pClient = new Field_client(); 
+    //auto pClient = new Field_client();
     //std::cout << "created client " << std::endl;
     //std::cout << "interp " << (field1->*(field1->fooHandler))(1.0,2.0,3.0) << std::endl;
-    //Field * pField = pClient->getField(); 
+    //Field * pField = pClient->getField();
     //std::cout << "created field pointer " << std::endl;
     //std::cout << "interp2 " << field1->interpolate(1.0,2.0,3.0) << std::endl;
     ////float interpvalfield  = pField->interpolate();
@@ -185,8 +185,8 @@ int main(int argc, char **argv, char **envp) {
   typedef std::chrono::duration<float> fsec0nc;
   fsec0nc fs0nc = finish_clock0nc - gitr_start_clock;
   //printf("Time taken for geometry import is %6.3f (secs) \n", fs0nc.count());
-  
-  
+
+
   int nR_Bfield = 1, nY_Bfield = 1, nZ_Bfield = 1, n_Bfield = 1;
   std::string bfieldCfg = "backgroundPlasmaProfiles.Bfield.";
   std::string bfieldFile;
@@ -682,12 +682,12 @@ int main(int argc, char **argv, char **envp) {
   typedef std::chrono::high_resolution_clock Time0;
   typedef std::chrono::duration<float> fsec0;
   auto start_clock0 = Time0::now();
-  
+
   std::cout << "geo1 numbers " << nLines << " "
         << nHashes  << " " << nR_closeGeom[0] <<  " "
         << nY_closeGeom[0]  << " " << nZ_closeGeom[0] <<" "
         << n_closeGeomElements[0] << std::endl;
-  
+
   hashGeom geo1(nLines, nHashes, boundaries.data(), closeGeomGridr.data(),
                 closeGeomGridy.data(), closeGeomGridz.data(),
                 n_closeGeomElements.data(), closeGeom.data(),
@@ -2850,6 +2850,9 @@ int main(int argc, char **argv, char **envp) {
   long nParticles = 0; // nP;
   int nT = 0;
 
+int ParticleSourceMethod = 0;
+cfg.lookupValue("impurityParticleSource.method",ParticleSourceMethod );
+cout << "Impurity Particle Source method:" << ParticleSourceMethod << endl;
   if (world_rank == 0) {
     nP = cfg.lookup("impurityParticleSource.nP");
     nParticles = nP;
@@ -2862,10 +2865,13 @@ int main(int argc, char **argv, char **envp) {
                 << std::endl;
     }
   }
+  cout << "Debug 00001" << endl;
 #if USE_MPI > 0
+cout << "MPI" << endl;
   MPI_Bcast(&dt, 1, MPI_FLOAT, 0, MPI_COMM_WORLD);
   MPI_Bcast(&nP, 1, MPI_INT, 0, MPI_COMM_WORLD);
   MPI_Bcast(&nT, 1, MPI_INT, 0, MPI_COMM_WORLD);
+  MPI_Bcast(&ParticleSourceMethod, 1, MPI_INT, 0, MPI_COMM_WORLD);
   MPI_Bcast(&nParticles, 1, MPI_LONG, 0, MPI_COMM_WORLD);
   MPI_Barrier(MPI_COMM_WORLD);
 #endif
@@ -2882,7 +2888,7 @@ int main(int argc, char **argv, char **envp) {
       }
       pStartIndx[i] = countP;
       countP = countP + nPPerRank[i];
-      std::cout << "countP " << countP << std::endl;
+      std::cout << "countP1 " << countP << std::endl;
     }
   } else {
     for (int i = 0; i < nP; i++) {
@@ -2896,13 +2902,15 @@ int main(int argc, char **argv, char **envp) {
     nActiveParticlesOnRank[i] = nPPerRank[i];
   }
   std::cout << "World rank " << world_rank << " has " << nPPerRank[world_rank]
-            << " starting at " << pStartIndx[world_rank] 
+            << " starting at " << pStartIndx[world_rank]
             << " ending at " << pStartIndx[world_rank]+nPPerRank[world_rank] << std::endl;
   auto particleArray = new Particles(nParticles,1,cfg,gitr_flags);
 
   float x, y, z, E, vtotal, vx, vy, vz, Ex, Ey, Ez, amu, Z, charge, phi, theta,
       Ex_prime, Ez_prime, theta_transform;
+      cout<<"WHY AM I HER00E?"<<endl;
   if (world_rank == 0) {
+  cout<<"WHY AM I HERE0000?"<<endl;
     if (cfg.lookupValue("impurityParticleSource.initialConditions.impurity_amu",
                         amu) &&
         cfg.lookupValue("impurityParticleSource.initialConditions.impurity_Z",
@@ -2923,8 +2931,9 @@ int main(int argc, char **argv, char **envp) {
   MPI_Bcast(&charge, 1, MPI_FLOAT, 0, MPI_COMM_WORLD);
   MPI_Barrier(MPI_COMM_WORLD);
 #endif
-
   int nSourceSurfaces = 0;
+  if (ParticleSourceMethod == 0) {
+  cout<<"WHY AM I HERE?"<<endl;
 #if PARTICLE_SOURCE_SPACE == 0 // Point Source
   if (world_rank == 0) {
     if (cfg.lookupValue("impurityParticleSource.initialConditions.x_start",
@@ -3112,6 +3121,7 @@ int main(int argc, char **argv, char **envp) {
 #endif
 #if PARTICLE_SOURCE_ENERGY == 0
   if (world_rank == 0) {
+  std::cout << "TESSSST " << std::endl;
     if (cfg.lookupValue("impurityParticleSource.initialConditions.energy_eV",
                         E)) {
       std::cout << "Impurity point source E: " << E << std::endl;
@@ -3222,6 +3232,7 @@ int main(int argc, char **argv, char **envp) {
   float randA = 0.0;
   int lowIndA = 0;
 #endif
+}
   std::cout << "Starting psourcefile import " << std::endl;
 #if PARTICLE_SOURCE_FILE > 0 // File source
   libconfig::Config cfg_particles;
@@ -3498,7 +3509,8 @@ int main(int argc, char **argv, char **envp) {
 #if USE_MPI > 0
   if (world_rank == 0) {
 #endif
-    std::cout << "writing particles out file" << std::endl;
+
+    std::cout << "writing particles out file with vz=" << pvz[0]<<std::endl;
     netCDF::NcFile ncFile_particles("output/particleSource.nc", netCDF::NcFile::replace);
     netCDF::NcDim pNP = ncFile_particles.addDim("nP", nP);
     netCDF::NcVar p_surfNormx = ncFile_particles.addVar("surfNormX", netCDF::ncFloat, pNP);
@@ -3510,6 +3522,8 @@ int main(int argc, char **argv, char **envp) {
     netCDF::NcVar p_x = ncFile_particles.addVar("x", netCDF::ncFloat, pNP);
     netCDF::NcVar p_y = ncFile_particles.addVar("y", netCDF::ncFloat, pNP);
     netCDF::NcVar p_z = ncFile_particles.addVar("z", netCDF::ncFloat, pNP);
+    netCDF::NcVar p_amu = ncFile_particles.addVar("amu", netCDF::ncFloat, pNP);
+    netCDF::NcVar p_charge = ncFile_particles.addVar("charge", netCDF::ncFloat, pNP);
     p_surfNormx.putVar(&pSurfNormX[0]);
     p_surfNormy.putVar(&pSurfNormY[0]);
     p_surfNormz.putVar(&pSurfNormZ[0]);
@@ -3519,7 +3533,10 @@ int main(int argc, char **argv, char **envp) {
     p_x.putVar(&px[0]);
     p_y.putVar(&py[0]);
     p_z.putVar(&pz[0]);
+    p_amu.putVar(&(particleArray->amu[0]));
+    p_charge.putVar(&(particleArray->charge[0]));
     ncFile_particles.close();
+
     std::cout << "finished writing particles out file" << std::endl;
 #if USE_MPI > 0
   }
@@ -3703,6 +3720,7 @@ int main(int argc, char **argv, char **envp) {
   *dev_tt = 0;
 #endif
   int tt = 0;
+  //std::cout << "boris" << std::endl;
   move_boris move_boris0(
       particleArray, dt, boundaries.data(), nLines, nR_Bfield, nZ_Bfield,
       bfieldGridr.data(), &bfieldGridz.front(), &br.front(), &bz.front(),
@@ -3739,7 +3757,7 @@ int main(int argc, char **argv, char **envp) {
   float *uni = new float[1];
   *uni = 0;
 #endif
-
+std::cout << "ionization active" << std:endl
   ionize<rand_type> ionize0(
       gitr_flags,particleArray, dt, &state1.front(), nR_Dens, nZ_Dens, &DensGridr.front(),
       &DensGridz.front(), &ne.front(), nR_Temp, nZ_Temp, &TempGridr.front(),
@@ -3756,6 +3774,7 @@ int main(int argc, char **argv, char **envp) {
   //auto func1 = *func;
 #endif
 #if USERECOMBINATION > 0
+std::cout << "recombination active" << std:endl
   recombine<rand_type> recombine0(
       particleArray, dt, &state1.front(), nR_Dens, nZ_Dens, &DensGridr.front(),
       &DensGridz.front(), &ne.front(), nR_Temp, nZ_Temp, &TempGridr.front(),
@@ -3764,12 +3783,14 @@ int main(int argc, char **argv, char **envp) {
       gridDensity_Recombination.data(), rateCoeff_Recombination.data());
 #endif
 #if USEPERPDIFFUSION > 0
+std::cout << "perp diff active" << std:endl
   crossFieldDiffusion crossFieldDiffusion0(
       particleArray, dt, &state1.front(), perpDiffusionCoeff, nR_Bfield,
       nZ_Bfield, bfieldGridr.data(), &bfieldGridz.front(), &br.front(),
       &bz.front(), &by.front());
 #endif
 #if USECOULOMBCOLLISIONS > 0
+std::cout << "coulomb collision active" << std:endl
   coulombCollisions coulombCollisions0(
       particleArray, dt, &state1.front(), nR_flowV, nY_flowV, nZ_flowV,
       &flowVGridr.front(), &flowVGridy.front(), &flowVGridz.front(),
@@ -3781,6 +3802,7 @@ int main(int argc, char **argv, char **envp) {
 
 #endif
 #if USETHERMALFORCE > 0
+std::cout << "thermal force active" << std:endl
   thermalForce thermalForce0(
       particleArray, dt, background_amu, nR_gradT, nZ_gradT, gradTGridr.data(),
       gradTGridz.data(), gradTiR.data(), gradTiZ.data(), gradTiY.data(),
@@ -3790,6 +3812,7 @@ int main(int argc, char **argv, char **envp) {
 #endif
 
 #if USESURFACEMODEL > 0
+std::cout << "USESURFACEMODEL active" << std:endl
   reflection reflection0(
       particleArray, dt, &state1.front(), nLines, &boundaries[0], surfaces,
       nE_sputtRefCoeff, nA_sputtRefCoeff, A_sputtRefCoeff.data(),
@@ -4025,8 +4048,13 @@ int main(int argc, char **argv, char **envp) {
 #endif
     for (tt; tt < nT; tt++) {
       // dev_tt[0] = tt;
-      //std::cout << " tt " << tt << std::endl;
+      int tprint = 1;
+      if (nT>100)
+      {tprint = floor(nT/100);}
+      if (tt%tprint == 0)
+      {std::cout << " tt/nT = " << tt << "/" << nT << std::endl;}
 #if USE_SORT > 0
+
       thrust::for_each(thrust::device, tmpInt.begin(), tmpInt.end(), sort0);
 #ifdef __CUDACC__
       cudaDeviceSynchronize();
@@ -4034,6 +4062,7 @@ int main(int argc, char **argv, char **envp) {
 #endif
 
 #if PARTICLE_TRACKS > 0
+
       thrust::for_each(thrust::device, particleBegin, particleEnd, history0);
 #ifdef __CUDACC__
       // cudaThreadSynchronize();
@@ -4043,11 +4072,12 @@ int main(int argc, char **argv, char **envp) {
       // pStartIndx[world_rank] << "  " << nActiveParticlesOnRank[world_rank] <<
       // std::endl; thrust::for_each(thrust::device,particleBegin,particleOne,
       //     test_routinePp(particleArray));
-
+//std::cout << "boris tt= " << tt << std::endl;
       thrust::for_each(thrust::device, particleBegin, particleEnd, move_boris0);
 #ifdef __CUDACC__
       // cudaThreadSynchronize();
 #endif
+//std::cout << "check tt= " << tt << std::endl;
       thrust::for_each(thrust::device, particleBegin, particleEnd,
                        geometry_check0);
 #ifdef __CUDACC__
@@ -4055,6 +4085,7 @@ int main(int argc, char **argv, char **envp) {
 #endif
 
 #if SPECTROSCOPY > 0
+//std::cout << "spectro tt= " << tt << std::endl;
       thrust::for_each(thrust::device, particleBegin, particleEnd, spec_bin0);
 #ifdef __CUDACC__
       // cudaThreadSynchronize();
@@ -4062,6 +4093,7 @@ int main(int argc, char **argv, char **envp) {
 #endif
 
 #if USEIONIZATION > 0
+//std::cout << "ionization tt= " << tt << std::endl;
       thrust::for_each(thrust::device, particleBegin, particleEnd,ionize0);
 #ifdef __CUDACC__
       // cudaThreadSynchronize();
@@ -4069,6 +4101,7 @@ int main(int argc, char **argv, char **envp) {
 #endif
 
 #if USERECOMBINATION > 0
+//std::cout << "recombination tt= " << tt << std::endl;
       thrust::for_each(thrust::device, particleBegin, particleEnd, recombine0);
 #ifdef __CUDACC__
       // cudaThreadSynchronize();
@@ -4076,6 +4109,7 @@ int main(int argc, char **argv, char **envp) {
 #endif
 
 #if USEPERPDIFFUSION > 0
+//std::cout << "perpdiffusion tt= " << tt << std::endl;
       thrust::for_each(thrust::device, particleBegin, particleEnd,
                        crossFieldDiffusion0);
       thrust::for_each(thrust::device, particleBegin, particleEnd,
@@ -4090,6 +4124,7 @@ int main(int argc, char **argv, char **envp) {
 #endif
 
 #if USECOULOMBCOLLISIONS > 0
+//std::cout << "comlomb tt= " << tt << std::endl;
       thrust::for_each(thrust::device, particleBegin, particleEnd,
                        coulombCollisions0);
 #ifdef __CUDACC__
@@ -4098,6 +4133,7 @@ int main(int argc, char **argv, char **envp) {
 #endif
 
 #if USETHERMALFORCE > 0
+//std::cout << "thermal force tt= " << tt << std::endl;
       thrust::for_each(thrust::device, particleBegin, particleEnd,
                        thermalForce0);
 #ifdef __CUDACC__
@@ -4106,6 +4142,7 @@ int main(int argc, char **argv, char **envp) {
 #endif
 
 #if USESURFACEMODEL > 0
+//std::cout << "surface_model tt= " << tt << std::endl;
       thrust::for_each(thrust::device, particleBegin, particleEnd, reflection0);
 #ifdef __CUDACC__
       // cudaThreadSynchronize();
@@ -4477,13 +4514,13 @@ std::cout << "bound 255 " << boundaries[255].impacts << std::endl;
                n_closeGeomElements_sheath, &closeGeomGridr_sheath.front(),
                &closeGeomGridy_sheath.front(), &closeGeomGridz_sheath.front(),
                &closeGeom_sheath.front(), closestBoundaryIndex);
-      
+
       if (boundaries[closestBoundaryIndex].Z > 0.0) {
         surfIndex = boundaries[closestBoundaryIndex].surfaceNumber;
         grossErosion[surfIndex] = grossErosion[surfIndex] + 1.0;
       }
     }
-    
+
     //#if PARTICLE_SOURCE == 1
     // int ring1 = 0;
     // int ring2 = 0;
@@ -4649,6 +4686,7 @@ std::cout << "bound 255 " << boundaries[255].impacts << std::endl;
     dimsSurfE.push_back(nc_nLines);
     netCDF::NcDim nc_nEnergies = ncFile1.addDim("nEnergies", nEdist);
     netCDF::NcDim nc_nAngles = ncFile1.addDim("nAngles", nAdist);
+
     dimsSurfE.push_back(nc_nAngles);
     dimsSurfE.push_back(nc_nEnergies);
     netCDF::NcVar nc_grossDep = ncFile1.addVar("grossDeposition", netCDF::ncFloat, nc_nLines);
@@ -4660,6 +4698,14 @@ std::cout << "bound 255 " << boundaries[255].impacts << std::endl;
         ncFile1.addVar("sumParticlesStrike", netCDF::ncInt, nc_nLines);
     netCDF::NcVar nc_sumWeightStrike =
         ncFile1.addVar("sumWeightStrike", netCDF::ncFloat, nc_nLines);
+             netCDF::NcVar nc_E0dist = ncFile1.addVar("E0", E0dist,netCDF::ncFloat);
+    netCDF::NcVar nc_Edist = ncFile1.addVar("E", Edist,netCDF::ncFloat);
+     netCDF::NcVar nc_A0dist = ncFile1.addVar("A0", A0dist,netCDF::ncFloat);
+    netCDF::NcVar nc_Adist = ncFile1.addVar("A", Adist,netCDF::ncFloat);
+    nc_Adist.putvar(Adist)
+    nc_Edist.putvar(Edist)
+    nc_A0dist.putvar(A0dist)
+    nc_E0dist.putvar(E0dist)
     nc_grossDep.putVar(&grossDeposition[0]);
     nc_surfNum.putVar(&surfaceNumbers[0]);
     nc_grossEro.putVar(&grossErosion[0]);
@@ -4685,10 +4731,10 @@ std::cout << "bound 255 " << boundaries[255].impacts << std::endl;
     nc_surfEDist.putVar(&energyDistribution[0]);
     nc_surfReflDist.putVar(&reflDistribution[0]);
     nc_surfSputtDist.putVar(&sputtDistribution[0]);
-    // NcVar nc_surfEDistGrid = ncFile1.addVar("gridE",ncDouble,nc_nEnergies);
-    // nc_surfEDistGrid.putVar(&surfaces->gridE[0]);
-    // NcVar nc_surfADistGrid = ncFile1.addVar("gridA",ncDouble,nc_nAngles);
-    // nc_surfADistGrid.putVar(&surfaces->gridA[0]);
+    NcVar nc_surfEDistGrid = ncFile1.addVar("gridE",netCDF::ncFloat,nc_nEnergies);
+    nc_surfEDistGrid.putVar(&surfaces->gridE[0]);
+    NcVar nc_surfADistGrid = ncFile1.addVar("gridA",netCDF::ncFloat,nc_nAngles);
+    nc_surfADistGrid.putVar(&surfaces->gridA[0]);
     ncFile1.close();
 #else
     std::vector<int> surfaceNumbers(nSurfaces, 0);
@@ -4700,11 +4746,12 @@ std::cout << "bound 255 " << boundaries[255].impacts << std::endl;
         surfaces->grossErosion[srf] = surfaces->grossErosion[srf] + grossErosion[srf];
         srf = srf + 1;
       }
-    }  
+    }
     netCDF::NcFile ncFile1("output/surface.nc", netCDF::NcFile::replace);
     netCDF::NcDim nc_nLines = ncFile1.addDim("nSurfaces", nSurfaces);
     vector<netCDF::NcDim> dims1;
     dims1.push_back(nc_nLines);
+
 
     vector<netCDF::NcDim> dimsSurfE;
     dimsSurfE.push_back(nc_nLines);
@@ -4721,6 +4768,7 @@ std::cout << "bound 255 " << boundaries[255].impacts << std::endl;
         ncFile1.addVar("sumParticlesStrike", netCDF::ncInt, nc_nLines);
     netCDF::NcVar nc_sumWeightStrike =
         ncFile1.addVar("sumWeightStrike", netCDF::ncFloat, nc_nLines);
+
     nc_grossDep.putVar(&surfaces->grossDeposition[0]);
     nc_surfNum.putVar(&surfaceNumbers[0]);
     nc_grossEro.putVar(&surfaces->grossErosion[0]);
@@ -4746,10 +4794,10 @@ std::cout << "bound 255 " << boundaries[255].impacts << std::endl;
     nc_surfEDist.putVar(&surfaces->energyDistribution[0]);
     nc_surfReflDist.putVar(&surfaces->reflDistribution[0]);
     nc_surfSputtDist.putVar(&surfaces->sputtDistribution[0]);
-    // NcVar nc_surfEDistGrid = ncFile1.addVar("gridE",ncDouble,nc_nEnergies);
-    // nc_surfEDistGrid.putVar(&surfaces->gridE[0]);
-    // NcVar nc_surfADistGrid = ncFile1.addVar("gridA",ncDouble,nc_nAngles);
-    // nc_surfADistGrid.putVar(&surfaces->gridA[0]);
+    netCDF::NcVar nc_surfEDistGrid = ncFile1.addVar("gridE",netCDF::ncFloat,nc_nEnergies);
+    nc_surfEDistGrid.putVar(&surfaces->gridE[0]);
+    netCDF::NcVar nc_surfADistGrid = ncFile1.addVar("gridA",netCDF::ncFloat,nc_nAngles);
+    nc_surfADistGrid.putVar(&surfaces->gridA[0]);
     ncFile1.close();
 #endif
 #endif

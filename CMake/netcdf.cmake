@@ -11,15 +11,15 @@ if( NOT NETCDF_FOUND )
   if( EXISTS ${prefix}/netcdf-c )
     ExternalProject_Add( netcdf-c_download
                          DOWNLOAD_COMMAND ""
-                         CONFIGURE_COMMAND cmake -S ${prefix}/netcdf-c -B ${prefix}/netcdf-c-build -DENABLE_DAP=OFF -DCMAKE_INSTALL_PREFIX=${prefix}/netcdf-c-install
+                         CONFIGURE_COMMAND cmake -S ${prefix}/netcdf-c -B ${prefix}/netcdf-c-build -DENABLE_DAP=OFF -DCMAKE_INSTALL_PREFIX=${prefix}/netcdf-c-install 
                          BUILD_COMMAND cmake --build ${prefix}/netcdf-c-build -- -j
                          INSTALL_COMMAND cmake --install ${prefix}/netcdf-c-build )
   else()
     ExternalProject_Add( netcdf-c_download
                          DOWNLOAD_COMMAND git clone ${netcdf-c-url} ${prefix}/netcdf-c
-                         CONFIGURE_COMMAND cmake -S ${prefix}/netcdf-c -B ${prefix}/netcdf-c-build -DENABLE_DAP=OFF -DCMAKE_INSTALL_PREFIX=${prefix}/netcdf-c-install
+                         CONFIGURE_COMMAND cmake -S ${prefix}/netcdf-c -B ${prefix}/netcdf-c-build -DENABLE_DAP=OFF 
                          BUILD_COMMAND cmake --build ${prefix}/netcdf-c-build -- -j
-                         INSTALL_COMMAND cmake --install ${prefix}/netcdf-c-build )
+                         INSTALL_COMMAND cmake )
 
   endif()
 

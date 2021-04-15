@@ -10,7 +10,7 @@
 #include <thrust/random.h>
 #endif
 
-#ifdef __GNUC__ 
+#ifdef __GNUC__
 #include <random>
 #endif
 #include <cmath>
@@ -38,7 +38,7 @@ struct boundary_init {
     float* bfieldZ;
     float* bfieldT;
     float potential;
-    
+
     boundary_init(float _background_Z, float _background_amu,int _nx, int _nz,
           float* _densityGridx, float* _densityGridz,float* _density,float* _ne,int _nxB,
           int _nzB, float* _bfieldGridr, float* _bfieldGridz,float* _bfieldR,
@@ -100,12 +100,12 @@ interp2dVector(&B[0],midpointx,midpointy,midpointz,nxB,nzB,bfieldGridr,
         float bt = B[1];
         float bz = B[2];
         float theta = std::acos((-br*b.slope_dzdx + bz)/(std::sqrt(br*br+bz*bz+bt*bt)*std::sqrt(b.slope_dzdx*b.slope_dzdx + 1.0)));
- 
+
         if (theta > 3.14159265359*0.5)
         {
             theta = std::acos((br*b.slope_dzdx - bz)/(std::sqrt(br*br+bz*bz+bt*bt)*std::sqrt(b.slope_dzdx*b.slope_dzdx + 1.0)));
         }
-#endif        
+#endif
         b.angle = theta*180.0/3.14159265359;
         b.debyeLength = std::sqrt(8.854187e-12*b.te/(b.ne*std::pow(background_Z,2)*1.60217662e-19));
 	//std::cout << "debyeLength " << b.debyeLength << std::endl;
@@ -126,17 +126,17 @@ interp2dVector(&B[0],midpointx,midpointy,midpointz,nxB,nzB,bfieldGridr,
         else
         { b.ChildLangmuirDist = 1e12;
         }
-#elif USE_SURFACE_POTENTIAL >0 
+#elif USE_SURFACE_POTENTIAL >0
 #else
         b.potential = 3.0*b.te;
-        //std::cout << "Surface number " << b.surfaceNumber << " has te and potential " << b.te << " " << b.potential << std::endl; 
-#endif        
+        //std::cout << "Surface number " << b.surfaceNumber << " has te and potential " << b.te << " " << b.potential << std::endl;
+#endif
         //if(b.Z > 0.0)
         //{
-        //std::cout << "Boundary ti density potensial and CLdist " <<b.ti << " " << 
-        //    b.density << " " << b.potential << " " << b.ChildLangmuirDist << std::endl;   
-        //}     
-    }	
+        //std::cout << "Boundary ti density potensial and CLdist " <<b.ti << " " <<
+        //    b.density << " " << b.potential << " " << b.ChildLangmuirDist << std::endl;
+        //}
+    }
 };
 
 #endif

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="GITR" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/GITR" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/GITR" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="../include/Boundary.h" />
+		<Unit filename="../include/Fields.h" />
+		<Unit filename="../include/Particle.h" />
+		<Unit filename="../include/Particles.h" />
+		<Unit filename="../include/Surfaces.h" />
+		<Unit filename="../include/array.h" />
+		<Unit filename="../include/boris.h" />
+		<Unit filename="../include/boundaryInit.h" />
+		<Unit filename="../include/coulombCollisions.h" />
+		<Unit filename="../include/crossFieldDiffusion.h" />
+		<Unit filename="../include/curandInitialize.h" />
+		<Unit filename="../include/curandInitialize2.h" />
+		<Unit filename="../include/device.h" />
+		<Unit filename="../include/fieldLineTrace.h" />
+		<Unit filename="../include/flags.hpp" />
+		<Unit filename="../include/geometryCheck.h" />
+		<Unit filename="../include/hashGeom.h" />
+		<Unit filename="../include/hashGeomSheath.h" />
+		<Unit filename="../include/history.h" />
+		<Unit filename="../include/interp2d.hpp" />
+		<Unit filename="../include/interpRateCoeff.hpp" />
+		<Unit filename="../include/interpolate.h" />
+		<Unit filename="../include/ionize.h" />
+		<Unit filename="../include/managed_allocation.h" />
+		<Unit filename="../include/ompPrint.h" />
+		<Unit filename="../include/recombine.h" />
+		<Unit filename="../include/sortParticles.h" />
+		<Unit filename="../include/spectroscopy.h" />
+		<Unit filename="../include/surfaceModel.h" />
+		<Unit filename="../include/thermalForce.h" />
+		<Unit filename="../include/utils.h" />
+		<Unit filename="../src/efield_interp.cpp" />
+		<Unit filename="../src/flags.cpp" />
+		<Unit filename="../src/gitr.cpp" />
+		<Unit filename="../src/interp2d.cpp" />
+		<Unit filename="../src/particle.cpp" />
+		<Unit filename="../src/setup.cpp" />
+		<Unit filename="../src/utils.cpp" />
+		<Extensions />
+	</Project>
+</CodeBlocks_project_file>

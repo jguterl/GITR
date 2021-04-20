@@ -4161,6 +4161,28 @@ std::cout << "USESURFACEMODEL active" << std:endl
   cudaDeviceSynchronize();
 #endif
 
+    netCDF::NcFile ncFile_pparticles("output/particleSource_end.nc", netCDF::NcFile::replace);
+    netCDF::NcDim ppNP = ncFile_pparticles.addDim("nP", nP);
+    netCDF::NcVar pp_vx = ncFile_pparticles.addVar("vx", netCDF::ncFloat, ppNP);
+    netCDF::NcVar pp_vy = ncFile_pparticles.addVar("vy", netCDF::ncFloat, ppNP);
+    netCDF::NcVar pp_vz = ncFile_pparticles.addVar("vz", netCDF::ncFloat, ppNP);
+    netCDF::NcVar pp_x = ncFile_pparticles.addVar("x", netCDF::ncFloat, ppNP);
+    netCDF::NcVar pp_y = ncFile_pparticles.addVar("y", netCDF::ncFloat, ppNP);
+    netCDF::NcVar pp_z = ncFile_pparticles.addVar("z", netCDF::ncFloat, ppNP);
+    netCDF::NcVar pp_amu = ncFile_pparticles.addVar("amu", netCDF::ncFloat, ppNP);
+    netCDF::NcVar pp_charge = ncFile_pparticles.addVar("charge", netCDF::ncFloat, ppNP);
+    netCDF::NcVar pp_surfacehit = ncFile_pparticles.addVar("surfacehit", netCDF::ncFloat, ppNP);
+    pp_vx.putVar(&(particleArray->vx[0]));
+    pp_vy.putVar(&(particleArray->vy[0]));
+    pp_vz.putVar(&(particleArray->vz[0]));
+    pp_x.putVar(&(particleArray->x[0]));
+    pp_y.putVar(&(particleArray->y[0]));
+    pp_z.putVar(&(particleArray->z[0]));
+    pp_amu.putVar(&(particleArray->amu[0]));
+    pp_charge.putVar(&(particleArray->charge[0]));
+    pp_surfacehit.putVar(&(particleArray->surfaceHit[0]));
+    ncFile_particles.close();
+
   auto finish_clock = gitr_time::now();
   std::chrono::duration<float> fs = finish_clock - start_clock;
   printf("Time taken          is %6.3f (secs) \n", fs.count());

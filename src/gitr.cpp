@@ -135,7 +135,7 @@ int main(int argc, char **argv, char **envp) {
 #endif
   }
   auto gitr_flags = new Flags(cfg);
-    std::cout << "gitr flags " << gitr_flags->USE_IONIZATION << std::endl;
+    //std::cout << "gitr flags " << gitr_flags->USE_IONIZATION << std::endl;
     //auto field1 = new Field(cfg,"backgroundPlasmaProfiles.Bfield");
     //FIXME: work on new field struct
     //auto field1 = new Field();
@@ -4181,7 +4181,7 @@ std::cout << "USESURFACEMODEL active" << std:endl
     pp_amu.putVar(&(particleArray->amu[0]));
     pp_charge.putVar(&(particleArray->charge[0]));
     pp_surfacehit.putVar(&(particleArray->surfaceHit[0]));
-    ncFile_particles.close();
+    ncFile_pparticles.close();
 
   auto finish_clock = gitr_time::now();
   std::chrono::duration<float> fs = finish_clock - start_clock;
@@ -4720,14 +4720,14 @@ std::cout << "bound 255 " << boundaries[255].impacts << std::endl;
         ncFile1.addVar("sumParticlesStrike", netCDF::ncInt, nc_nLines);
     netCDF::NcVar nc_sumWeightStrike =
         ncFile1.addVar("sumWeightStrike", netCDF::ncFloat, nc_nLines);
-             netCDF::NcVar nc_E0dist = ncFile1.addVar("E0", E0dist,netCDF::ncFloat);
-    netCDF::NcVar nc_Edist = ncFile1.addVar("E", Edist,netCDF::ncFloat);
-     netCDF::NcVar nc_A0dist = ncFile1.addVar("A0", A0dist,netCDF::ncFloat);
-    netCDF::NcVar nc_Adist = ncFile1.addVar("A", Adist,netCDF::ncFloat);
-    nc_Adist.putvar(Adist)
-    nc_Edist.putvar(Edist)
-    nc_A0dist.putvar(A0dist)
-    nc_E0dist.putvar(E0dist)
+//             netCDF::NcVar nc_E0dist = ncFile1.addVar("E0", E0dist,netCDF::ncFloat);
+//    netCDF::NcVar nc_Edist = ncFile1.addVar("E", Edist,netCDF::ncFloat);
+//     netCDF::NcVar nc_A0dist = ncFile1.addVar("A0", A0dist,netCDF::ncFloat);
+//    netCDF::NcVar nc_Adist = ncFile1.addVar("A", Adist,netCDF::ncFloat);
+//    nc_Adist.putvar(Adist)
+//    nc_Edist.putvar(Edist)
+//    nc_A0dist.putvar(A0dist)
+//    nc_E0dist.putvar(E0dist)
     nc_grossDep.putVar(&grossDeposition[0]);
     nc_surfNum.putVar(&surfaceNumbers[0]);
     nc_grossEro.putVar(&grossErosion[0]);
@@ -4753,9 +4753,9 @@ std::cout << "bound 255 " << boundaries[255].impacts << std::endl;
     nc_surfEDist.putVar(&energyDistribution[0]);
     nc_surfReflDist.putVar(&reflDistribution[0]);
     nc_surfSputtDist.putVar(&sputtDistribution[0]);
-    NcVar nc_surfEDistGrid = ncFile1.addVar("gridE",netCDF::ncFloat,nc_nEnergies);
+    netCDF::NcVar nc_surfEDistGrid = ncFile1.addVar("gridE",netCDF::ncFloat,nc_nEnergies);
     nc_surfEDistGrid.putVar(&surfaces->gridE[0]);
-    NcVar nc_surfADistGrid = ncFile1.addVar("gridA",netCDF::ncFloat,nc_nAngles);
+    netCDF::NcVar nc_surfADistGrid = ncFile1.addVar("gridA",netCDF::ncFloat,nc_nAngles);
     nc_surfADistGrid.putVar(&surfaces->gridA[0]);
     ncFile1.close();
 #else

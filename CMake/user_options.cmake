@@ -3,7 +3,7 @@
 # String description for each option
 set( description "(no description added - see define_options.cmake)" )
 set( GITR_USE_CUDA 0 CACHE STRING "${description}" )
-set( GITR_USE_MPI 0 CACHE STRING "${description}" )
+set( GITR_USE_MPI 1 CACHE STRING "${description}" )
 set( GITR_USE_IONIZATION 0 CACHE STRING "${description}" )
 set( GITR_USE_RECOMBINATION 0 CACHE STRING "${description}" )
 set( GITR_USE_PERP_DIFFUSION 0 CACHE STRING "${description}" )

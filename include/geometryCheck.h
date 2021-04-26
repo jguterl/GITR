@@ -1022,10 +1022,10 @@ return;}
         particleTrackVector[0] = particleTrackVector[0] / norm_part;
         particleTrackVector[1] = particleTrackVector[1] / norm_part;
         particleTrackVector[2] = particleTrackVector[2] / norm_part;
-        std::cout<<"surface normal:" << surfaceNormalVector[0]<< surfaceNormalVector[1]<< surfaceNormalVector[2] <<std::endl;
-        std::cout<<"wallHitP:" << wallHitP <<std::endl;
-        std::cout<<"surface normal:" << particleTrackVector[0]<< particleTrackVector[1]<< particleTrackVector[2] <<std::endl;
-        std::cout<<"surface normal:" << std::acos(vectorDotProduct(particleTrackVector, surfaceNormalVector))* 180.0 / 3.14159265359 <<std::endl;
+        //std::cout<<"surface normal:" << surfaceNormalVector[0]<< surfaceNormalVector[1]<< surfaceNormalVector[2] <<std::endl;
+        //std::cout<<"wallHitP:" << wallHitP <<std::endl;
+        //std::cout<<"surface normal:" << particleTrackVector[0]<< particleTrackVector[1]<< particleTrackVector[2] <<std::endl;
+        //std::cout<<"surface normal:" << std::acos(vectorDotProduct(particleTrackVector, surfaceNormalVector))* 180.0 / 3.14159265359 <<std::endl;
         partDotNormal =
             vectorDotProduct(particleTrackVector, surfaceNormalVector);
         thetaImpact = std::acos(partDotNormal);

@@ -1,0 +1,13 @@
+prefix=/home/jguterl/GITR/external/netcdf-c-install
+exec_prefix=/home/jguterl/GITR/external/netcdf-c-install
+libdir=/home/jguterl/GITR/external/netcdf-c-install/lib
+includedir=/home/jguterl/GITR/external/netcdf-c-install/include
+ccompiler=/usr/bin/cc
+
+Name: netCDF
+Description: NetCDF Client Library for C
+URL: http://www.unidata.ucar.edu/netcdf
+Version: 4.8.1-development
+Libs: -L${libdir} -lnetcdf
+Libs.private: -lhdf5_hl -lhdf5 -lpthread -lsz -lz -ldl -lm
+Cflags: -I${includedir}

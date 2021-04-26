@@ -1,0 +1,1 @@
+/usr/bin/cc  -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -g -Wall -Wconversion CMakeFiles/nctrunc.dir/nctrunc.c.o -o nctrunc 

@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/jguterl/GITR/external/netcdf-c/ncdump/nctrunc.c
+stdlib.h
+-
+stdio.h
+-
+string.h
+-
+

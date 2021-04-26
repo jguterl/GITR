@@ -1,0 +1,47 @@
+# NetCDF C Configuration Summary
+==============================
+
+# General
+-------
+NetCDF Version:		4.8.1-development
+Dispatch Version:       3
+Configured On:		Mon Apr 12 10:19:10 PDT 2021
+Host System:		x86_64-Linux-5.4.0-54-generic
+Build Directory: 	/home/jguterl/GITR/external/netcdf-c-build
+Install Prefix:         /home/jguterl/GITR/external/netcdf-c-install
+
+# Compiling Options
+-----------------
+C Compiler:		/usr/bin/cc
+CFLAGS:			 -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -g -Wall -Wconversion
+CPPFLAGS:		 
+LDFLAGS:		  -Wl,--no-undefined
+AM_CFLAGS:		
+AM_CPPFLAGS:		
+AM_LDFLAGS:		
+Shared Library:		yes
+Static Library:		no
+Extra libraries:	-lhdf5_hl -lhdf5 -lpthread -lsz -lz -ldl -lm
+
+# Features
+--------
+NetCDF-2 API:		yes
+HDF4 Support:		no
+HDF5 Support:		yes
+NetCDF-4 API:		yes
+NC-4 Parallel Support:	no
+PnetCDF Support:	no
+DAP2 Support:		no
+DAP4 Support:		no
+Byte-Range Support:	no
+Diskless Support:	yes
+MMap Support:		yes
+JNA Support:		no
+CDF5 Support:		yes
+ERANGE Fill Support:	yes
+Relaxed Boundary Check:	yes
+SZIP Support:           no
+SZIP Write Support:     no
+Parallel Filters:       no
+NCZarr Support:		yes
+Multi-Filter Support:	yes

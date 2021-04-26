@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/jguterl/GITR/external/netcdf-c/examples/C/sfc_pres_temp_wr.c
+stdio.h
+-
+string.h
+-
+netcdf.h
+-
+
+/home/jguterl/GITR/external/netcdf-c/include/netcdf.h
+stddef.h
+-
+errno.h
+-
+malloc.h
+-
+io.h
+-
+

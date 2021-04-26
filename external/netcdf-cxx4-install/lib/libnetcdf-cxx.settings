@@ -1,0 +1,23 @@
+# NetCDF C Configuration Summary
+==============================
+
+# General
+-------
+NetCDF Version:		4.3.2-developer
+Configured On:		Mon Apr 12 10:19:36 PDT 2021
+Host System:		x86_64-Linux-5.4.0-54-generic
+Build Directory: 	/home/jguterl/GITR/external/netcdf-cxx4-build
+Install Prefix:         
+
+# Compiling Options
+-----------------
+C Compiler:		/usr/bin/cc
+CFLAGS:			 -Wall -Wno-unused-variable -Wno-unused-parameter -g
+CPPFLAGS:		 -Wall -Wno-unused-variable -Wno-unused-parameter -g -Wconversion
+LDFLAGS:		  -Wl,--no-undefined
+AM_CFLAGS:		
+AM_CPPFLAGS:		
+AM_LDFLAGS:		
+Shared Library:		yes
+Static Library:		no
+Extra libraries:	

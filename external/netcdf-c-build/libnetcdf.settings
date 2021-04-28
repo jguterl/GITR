@@ -5,7 +5,7 @@
 -------
 NetCDF Version:		4.8.1-development
 Dispatch Version:       3
-Configured On:		Mon Apr 12 10:19:10 PDT 2021
+Configured On:		Mon Apr 26 14:20:29 PDT 2021
 Host System:		x86_64-Linux-5.4.0-54-generic
 Build Directory: 	/home/jguterl/GITR/external/netcdf-c-build
 Install Prefix:         /home/jguterl/GITR/external/netcdf-c-install

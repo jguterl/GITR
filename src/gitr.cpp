@@ -4786,6 +4786,15 @@ std::cout << "bound 255 " << boundaries[255].impacts << std::endl;
     netCDF::NcVar nc_aveSpyl = ncFile1.addVar("aveSpyl", netCDF::ncFloat, nc_nLines);
     netCDF::NcVar nc_spylCounts = ncFile1.addVar("spylCounts", netCDF::ncInt, nc_nLines);
     netCDF::NcVar nc_surfNum = ncFile1.addVar("surfaceNumber", netCDF::ncInt, nc_nLines);
+    netCDF::NcVar nc_x1 = ncFile1.addVar("x1", netCDF::ncFloat, nc_nLines);
+    netCDF::NcVar nc_x2 = ncFile1.addVar("x2", netCDF::ncFloat, nc_nLines);
+    netCDF::NcVar nc_x3 = ncFile1.addVar("x3", netCDF::ncFloat, nc_nLines);
+    netCDF::NcVar nc_y1 = ncFile1.addVar("y1", netCDF::ncFloat, nc_nLines);
+    netCDF::NcVar nc_y2 = ncFile1.addVar("y2", netCDF::ncFloat, nc_nLines);
+    netCDF::NcVar nc_y3 = ncFile1.addVar("y3", netCDF::ncFloat, nc_nLines);
+    netCDF::NcVar nc_z1 = ncFile1.addVar("z1", netCDF::ncFloat, nc_nLines);
+    netCDF::NcVar nc_z2 = ncFile1.addVar("z2", netCDF::ncFloat, nc_nLines);
+    netCDF::NcVar nc_z3 = ncFile1.addVar("z3", netCDF::ncFloat, nc_nLines);
     netCDF::NcVar nc_sumParticlesStrike =
         ncFile1.addVar("sumParticlesStrike", netCDF::ncInt, nc_nLines);
     netCDF::NcVar nc_sumWeightStrike =
@@ -4816,6 +4825,8 @@ std::cout << "bound 255 " << boundaries[255].impacts << std::endl;
     nc_surfEDist.putVar(&surfaces->energyDistribution[0]);
     nc_surfReflDist.putVar(&surfaces->reflDistribution[0]);
     nc_surfSputtDist.putVar(&surfaces->sputtDistribution[0]);
+
+
     netCDF::NcVar nc_surfEDistGrid = ncFile1.addVar("gridE",netCDF::ncFloat,nc_nEnergies);
     nc_surfEDistGrid.putVar(&surfaces->gridE[0]);
     netCDF::NcVar nc_surfADistGrid = ncFile1.addVar("gridA",netCDF::ncFloat,nc_nAngles);

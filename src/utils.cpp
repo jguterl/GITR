@@ -555,9 +555,9 @@ int importGeometry(libconfig::Config &cfg_geom, sim::Array<Boundary> &boundaries
        boundaries[nLines].periodic_bc_x0 = geom["periodic_bc_x0"];
        boundaries[nLines].periodic_bc_x1 = geom["periodic_bc_x1"];
        boundaries[nLines].periodic_bc_x = geom["periodic_bc_x"];
-        boundaries[nLines].periodic_bc_x0 = geom["periodic_bc_y0"];
-       boundaries[nLines].periodic_bc_x1 = geom["periodic_bc_y1"];
-       boundaries[nLines].periodic_bc_x = geom["periodic_bc_y"];
+        boundaries[nLines].periodic_bc_y0 = geom["periodic_bc_y0"];
+       boundaries[nLines].periodic_bc_y1 = geom["periodic_bc_y1"];
+       boundaries[nLines].periodic_bc_y = geom["periodic_bc_y"];
        boundaries[nLines].y1 = geom["theta0"];
        boundaries[nLines].y2 = geom["theta1"];
        boundaries[nLines].periodic = geom["periodic"];
